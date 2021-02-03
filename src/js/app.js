@@ -1,33 +1,43 @@
 // TODO: write code here
 
-const fileEl = document.querySelector('.overlapped');
-const previewEl = document.querySelector('[data-id=preview]');
-const dropArea = document.querySelector('[data-id=drop-area]');
+console.log('app.js bundled');
+// TODO: write code here
 
-dropArea.addEventListener('click', () => {
+const fileEl = document.querySelector('.overlapped');
+const overlapEl = document.querySelector('.overlap');
+const previewEl = document.querySelector('[data-id=preview]');
+const textPreviewEl = document.querySelector('[data-id=text-preview]')
+
+
+const dropEl = document.querySelector('[data-id=drop-area]');
+
+dropEl.addEventListener('click', (evt) => {
+    evt.preventDefault();
     fileEl.dispatchEvent(new MouseEvent('click'));
+  });
+
+
+dropEl.addEventListener('dragover', (evt) => {
+  evt.preventDefault();
 });
+
+dropEl.addEventListener('drop', (evt) => {
+  evt.preventDefault(); 
+    fileEl.files = evt.dataTransfer.files;
+    fileEl.dispatchEvent(new Event('change'));
+});
+
+
 
 fileEl.addEventListener('change', (evt) => {
   const files = Array.from(evt.currentTarget.files);
-
-  const file = files[0];
-
-  if (file.type.startsWith('image/')) {
-    previewEl.src = URL.createObjectURL(file);
-    previewEl.addEventListener('load', () => {
-      URL.revokeObjectURL(previewEl.src);
-    });
-
-    const a = document.createElement('a');
-    a.download = file.name;
-    a.href = URL.createObjectURL(file);
-    console.log(a.href);
-    a.rel = 'noopener';
-    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-    setTimeout(() => a.dispatchEvent(new MouseEvent('click')));
-  } else if (file.type.startsWith('text/')) {
-    readFile(file).then(data => textPreviewEl.value = data);
-  }
+  files.forEach(file => {
+    if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        previewEl.insertAdjacentElement('afterbegin', img);
+      }
+  });
 });
+
 
